@@ -9,4 +9,5 @@ public class BaseEvent
 {
     public Guid Id { get; set; }
     public DateTime Timestamp { get; set; }
+    public required string EventName { get; set; }
 }
