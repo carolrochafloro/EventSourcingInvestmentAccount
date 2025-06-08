@@ -63,6 +63,8 @@ public class Business : IBusiness
                 case Withdrawal wd:
                     account.Balance -= wd.Amount;
                     break;
+                default:
+                    throw new InvalidOperationException($"Evento desconhecido: {ev.GetType().Name}");
             }
         }
 
