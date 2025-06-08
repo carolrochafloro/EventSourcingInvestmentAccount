@@ -1,10 +1,6 @@
 ﻿using Domain.Events;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
@@ -69,6 +65,7 @@ public class Queue : IQueue, IAsyncDisposable
             catch (Exception ex) 
             {
                 tcs.TrySetException(ex);
+                await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
             }
         };
 
