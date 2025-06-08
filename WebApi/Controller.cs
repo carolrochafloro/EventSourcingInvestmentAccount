@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi;
 
+[ApiController]
 public class Controller : ControllerBase
 {
     private readonly IBusiness _business;
