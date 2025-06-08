@@ -10,4 +10,5 @@ public interface IData
     Snapshot GetSnapshot(DateOnly? date, string account);
     Account GetAccount(string account);
     void SaveSnapshot(Snapshot snapshot);
+    void CreateAccount(Account account);
 }

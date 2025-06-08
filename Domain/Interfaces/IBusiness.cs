@@ -13,5 +13,6 @@ public interface IBusiness
     Snapshot GetSnapshotByDate(DateOnly date, string account);
     void CreateSnapshot(string account);
     Account GetCurrentState(string account);
-
+    Account CreateAccount(string name);
+    Account GetAccountStateByDate(string account, DateOnly date);
 }

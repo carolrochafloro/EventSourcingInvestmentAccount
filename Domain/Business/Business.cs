@@ -51,6 +51,32 @@ public class Business : IBusiness
         return currentAccount;
     }
 
+    public Account CreateAccount(string name)
+    {
+        Account newAccount = new Account
+        {
+            Name = name,
+            AccountNumber = new Random().Next(100_000_000, 1_000_000_000).ToString(),
+            Balance = 0
+        };
+
+        _data.CreateAccount(newAccount);
+        return newAccount;
+    }
+
+    public Account GetAccountStateByDate(string account, DateOnly date)
+    {
+        Account currentAccount = _data.GetAccount(account);
+        Snapshot lastSnapshot = _data.GetSnapshot(date, account);
+        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSince(account, date);
+
+        currentAccount.Balance = lastSnapshot.Amount;
+
+        currentAccount = ProcessEvents(eventsSinceLastSnapshot, currentAccount);
+
+        return currentAccount;
+    }
+
     private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account) 
     {
         foreach (BaseEvent ev in events) 
