@@ -8,11 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IBusiness, Business>();
+builder.Services.AddScoped<IBusiness, Business>();
 builder.Services.AddSingleton<IQueue, Queue>();
-builder.Services.AddSingleton<IData, Data>();
-builder.Services.AddSingleton<ICapitalContributionHandler, CapitalContributionHandler>();
-builder.Services.AddSingleton<IWithdrawalHandler, WithdrawalHandler>();
+builder.Services.AddScoped<IData, Data>();
+builder.Services.AddScoped<ICapitalContributionHandler, CapitalContributionHandler>();
+builder.Services.AddScoped<IWithdrawalHandler, WithdrawalHandler>();
 
 builder.Services.AddSwaggerGen();
 
