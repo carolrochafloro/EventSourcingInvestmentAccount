@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enum;
 using Domain.Events;
 using System;
 using System.Collections.Generic;
@@ -15,4 +16,5 @@ public interface IBusiness
     Account GetCurrentState(string account);
     Account CreateAccount(string name);
     Account GetAccountStateByDate(string account, DateOnly date);
+    void PublishEvent(decimal amount, string account, TransactionTypes transactionType);
 }

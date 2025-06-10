@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enum;
 using Domain.Events;
 using Domain.Interfaces;
 
@@ -6,10 +7,12 @@ namespace Domain.Business;
 public class Business : IBusiness
 {
     private readonly IData _data;
+    private readonly IQueue _queue;
 
-    public Business(IData data)
+    public Business(IData data, IQueue queue)
     {
         _data = data;
+        _queue = queue;
     }
 
     public List<BaseEvent> GetEventsForAccount(string account)
@@ -75,6 +78,12 @@ public class Business : IBusiness
         currentAccount = ProcessEvents(eventsSinceLastSnapshot, currentAccount);
 
         return currentAccount;
+    }
+
+    public void PublishEvent(decimal amount, string account, TransactionTypes transactionType)
+    {
+        BaseEvent evt = transactionType switch { }
+        _queue.Produce(evt);
     }
 
     private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account) 

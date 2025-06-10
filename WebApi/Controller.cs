@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enum;
 using Domain.Events;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +70,21 @@ public class Controller : ControllerBase
             return Ok(accountState);
 
         } catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("/PublishTransaction")]
+    public IActionResult PublishTransaction([FromQuery] decimal amount, [FromQuery] string account, [FromQuery] TransactionTypes transactionType)
+    {
+        try
+        {
+            _business.PublishEvent(amount, account, transactionType);
+            return Ok("Transação registrada com sucesso.");
+        }
+        catch (Exception ex) 
         {
             return BadRequest(ex.Message);
         }
