@@ -3,6 +3,7 @@ using Domain.EventHandlers;
 using Domain.Interfaces;
 using Infra.Data;
 using Infra.Queue;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddSingleton<IQueue, Queue>();
 builder.Services.AddScoped<IData, Data>();
 builder.Services.AddScoped<ICapitalContributionHandler, CapitalContributionHandler>();
 builder.Services.AddScoped<IWithdrawalHandler, WithdrawalHandler>();
+
+builder.Services.AddDbContext<EventSourcingDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
 builder.Services.AddSwaggerGen();
 
