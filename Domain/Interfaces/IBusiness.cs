@@ -18,4 +18,5 @@ public interface IBusiness
     Account GetAccountStateByDate(string account, DateOnly date);
     void PublishEvent(decimal amount, string account, TransactionTypes transactionType);
     void RollbackEvent(BaseEvent originalEvent);
+    BaseEvent GetEventById(Guid id);
 }

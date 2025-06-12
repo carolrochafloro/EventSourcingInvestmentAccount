@@ -107,4 +107,19 @@ public class Controller : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet]
+    [Route("/GetEventById")]
+    public IActionResult GetEventById([FromQuery] Guid id)
+    {
+        try
+        {
+            var evt = _business.GetEventById(id);
+            return Ok(evt);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

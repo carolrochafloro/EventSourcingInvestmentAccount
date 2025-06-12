@@ -106,6 +106,12 @@ public class Business : IBusiness
         _queue.Produce(reversal);
     }
 
+    public BaseEvent GetEventById(Guid id)
+    {
+        var evt = _data.GetEventById(id);
+        return evt;
+    }
+
     private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account)
     {
         foreach (BaseEvent ev in events)

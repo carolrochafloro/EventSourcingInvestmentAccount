@@ -11,4 +11,5 @@ public interface IData
     Account GetAccount(string account);
     void SaveSnapshot(Snapshot snapshot);
     void CreateAccount(Account account);
+    BaseEvent GetEventById(Guid Id);
 }
