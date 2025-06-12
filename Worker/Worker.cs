@@ -1,7 +1,7 @@
 using Domain.Events;
 using Domain.Interfaces;
 
-namespace Worker;
+namespace WorkerApp;
 
 public class Worker : BackgroundService
 {

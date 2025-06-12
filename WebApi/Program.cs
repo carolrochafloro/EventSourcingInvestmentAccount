@@ -9,8 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IQueue>(provider =>
+{
+    var queue = Queue.CreateAsync("localhost").GetAwaiter().GetResult();
+    return queue;
+});
+
 builder.Services.AddScoped<IBusiness, Business>();
-builder.Services.AddSingleton<IQueue, Queue>();
 builder.Services.AddScoped<IData, Data>();
 builder.Services.AddScoped<ICapitalContributionHandler, CapitalContributionHandler>();
 builder.Services.AddScoped<IWithdrawalHandler, WithdrawalHandler>();
