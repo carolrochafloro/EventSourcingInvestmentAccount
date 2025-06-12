@@ -27,18 +27,28 @@ public class Business : IBusiness
 
     public void CreateSnapshot(string account)
     {
-        Snapshot lastSnapshot = _data.GetSnapshot(null, account);
-        DateOnly lastSnapshotDate = DateOnly.FromDateTime(lastSnapshot.Timestamp);
-        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSince(account, lastSnapshotDate);
+        Snapshot? lastSnapshot = _data.GetSnapshot(null, account);
+        List<BaseEvent> eventsToReplay;
+        decimal startingBalance = 0;
 
-        Account currentAccount = _data.GetAccount(account);
-        currentAccount = ProcessEvents(eventsSinceLastSnapshot, currentAccount);
+        if (lastSnapshot != null)
+        {
+            DateOnly lastSnapshotDate = DateOnly.FromDateTime(lastSnapshot.Timestamp);
+            eventsToReplay = _data.GetEventsSince(account, lastSnapshotDate);
+            startingBalance = lastSnapshot.Balance;
+        }
+        else
+        {
+            eventsToReplay = _data.GetAllEvents(account);
+        }
+
+        decimal balance = CalculateBalance(eventsToReplay, startingBalance);
 
         Snapshot snapshot = new Snapshot
         {
-            Account = currentAccount.AccountNumber,
-            Timestamp = DateTime.Now,
-            Amount = currentAccount.Balance,
+            Account = account,
+            Timestamp = DateTime.UtcNow,
+            Balance = balance
         };
 
         _data.SaveSnapshot(snapshot);
@@ -49,7 +59,7 @@ public class Business : IBusiness
         List<BaseEvent> evts = _data.GetAllEvents(account);
         Account currentAccount = _data.GetAccount(account);
         
-        currentAccount = ProcessEvents(evts, currentAccount);
+        currentAccount.Balance = CalculateBalance(evts, currentAccount.Balance);
 
         return currentAccount;
     }
@@ -71,11 +81,10 @@ public class Business : IBusiness
     {
         Account currentAccount = _data.GetAccount(account);
         Snapshot lastSnapshot = _data.GetSnapshot(date, account);
-        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSince(account, date);
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSinceUntil(account, date, currentDate);
 
-        currentAccount.Balance = lastSnapshot.Amount;
-
-        currentAccount = ProcessEvents(eventsSinceLastSnapshot, currentAccount);
+        currentAccount.Balance = CalculateBalance(eventsSinceLastSnapshot, lastSnapshot.Balance);
 
         return currentAccount;
     }
@@ -112,22 +121,22 @@ public class Business : IBusiness
         return evt;
     }
 
-    private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account)
+    private decimal CalculateBalance(IEnumerable<BaseEvent> events, decimal startingBalance)
     {
         foreach (BaseEvent ev in events)
         {
             switch (ev)
             {
                 case CapitalContribution cc:
-                    account.Balance += cc.Amount;
+                    startingBalance += cc.Amount;
                     break;
 
                 case Withdrawal wd:
-                    account.Balance -= wd.Amount;
+                    startingBalance -= wd.Amount;
                     break;
 
                 case ReversalEvent reversal:
-                    account.Balance += reversal.OriginalEventName switch
+                    startingBalance += reversal.OriginalEventName switch
                     {
                         nameof(CapitalContribution) => -reversal.Amount,
                         nameof(Withdrawal) => reversal.Amount,
@@ -140,6 +149,6 @@ public class Business : IBusiness
             }
         }
 
-        return account;
+        return startingBalance;
     }
 }

@@ -12,4 +12,5 @@ public interface IData
     void SaveSnapshot(Snapshot snapshot);
     void CreateAccount(Account account);
     BaseEvent GetEventById(Guid Id);
+    List<BaseEvent> GetEventsSinceUntil(string account, DateOnly sinceDate, DateOnly untilDate);
 }

@@ -18,12 +18,9 @@ public class CapitalContributionHandler : ICapitalContributionHandler
         _data = data;
         _logger = logger;
     }
-
     public void HandleEvent(CapitalContribution evt)
     {
         _logger.LogInformation($"Salvando o evento {evt.EventName} - timestamp {evt.Timestamp}");
         _data.SaveEvent(evt);
     }
-
-
 }
