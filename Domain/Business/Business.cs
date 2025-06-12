@@ -82,8 +82,19 @@ public class Business : IBusiness
 
     public void PublishEvent(decimal amount, string account, TransactionTypes transactionType)
     {
-        BaseEvent evt = transactionType switch { }
+        BaseEvent evt = transactionType switch
+        {
+            TransactionTypes.CapitalContribution => new CapitalContribution(account, amount),
+            TransactionTypes.Withdrawal => new Withdrawal(account, amount),
+            _ => throw new ArgumentOutOfRangeException(nameof(transactionType), $"Tipo de transação não suportado: {transactionType}")
+        };
+
         _queue.Produce(evt);
+    }
+
+    public void RollbackTransactionsFrom(string account, DateOnly date, BaseEvent evt)
+    {
+
     }
 
     private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account) 
