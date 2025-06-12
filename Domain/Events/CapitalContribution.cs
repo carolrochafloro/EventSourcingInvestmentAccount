@@ -5,12 +5,4 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Events;
-public class CapitalContribution : BaseEvent
-{
-    public decimal Amount { get; set; }
-    
-    public CapitalContribution()
-    {
-        base.EventName = nameof(CapitalContribution);
-    }
-}
+public record CapitalContribution(string Account, decimal Amount) : BaseEvent(Guid.NewGuid(), DateTime.UtcNow, Account, Amount);

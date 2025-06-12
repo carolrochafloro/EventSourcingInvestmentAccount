@@ -5,12 +5,4 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Events;
-public class Withdrawal : BaseEvent
-{
-    public decimal Amount { get; set; }
-
-    public Withdrawal()
-    {
-        base.EventName = nameof(Withdrawal);
-    }
-}
+public record Withdrawal(string Account, decimal Amount) : BaseEvent(Guid.NewGuid(), DateTime.UtcNow, Account, Amount);

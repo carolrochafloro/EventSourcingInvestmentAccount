@@ -5,9 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Events;
-public class BaseEvent
+public abstract record BaseEvent
+(
+    Guid Id,
+    DateTime Timestamp,
+    string Account,
+    Decimal Amount
+)
 {
-    public Guid Id { get; set; }
-    public DateTime Timestamp { get; set; }
-    public required string EventName { get; set; }
+public virtual string EventName => GetType().Name;
 }
