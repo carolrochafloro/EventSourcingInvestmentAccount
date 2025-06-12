@@ -92,23 +92,43 @@ public class Business : IBusiness
         _queue.Produce(evt);
     }
 
-    public void RollbackTransactionsFrom(string account, DateOnly date, BaseEvent evt)
+    public void RollbackEvent(BaseEvent originalEvent)
     {
+        var reversal = new ReversalEvent(
+        Guid.NewGuid(),
+        DateTime.UtcNow,
+        originalEvent.Account,
+        originalEvent.Amount,
+        originalEvent.Id,
+        originalEvent.EventName
+    );
 
+        _queue.Produce(reversal);
     }
 
-    private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account) 
+    private Account ProcessEvents(IEnumerable<BaseEvent> events, Account account)
     {
-        foreach (BaseEvent ev in events) 
+        foreach (BaseEvent ev in events)
         {
-           switch (ev)
+            switch (ev)
             {
                 case CapitalContribution cc:
                     account.Balance += cc.Amount;
                     break;
+
                 case Withdrawal wd:
                     account.Balance -= wd.Amount;
                     break;
+
+                case ReversalEvent reversal:
+                    account.Balance += reversal.OriginalEventName switch
+                    {
+                        nameof(CapitalContribution) => -reversal.Amount,
+                        nameof(Withdrawal) => reversal.Amount,
+                        _ => throw new InvalidOperationException($"Tipo de evento reversível desconhecido: {reversal.OriginalEventName}")
+                    };
+                    break;
+
                 default:
                     throw new InvalidOperationException($"Evento desconhecido: {ev.GetType().Name}");
             }

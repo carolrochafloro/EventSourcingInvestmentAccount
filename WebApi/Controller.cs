@@ -39,8 +39,8 @@ public class Controller : ControllerBase
             Account currentAccount = _business.GetCurrentState(account);
             return Ok(currentAccount);
         }
-        catch (Exception ex) 
-        { 
+        catch (Exception ex)
+        {
             return BadRequest(ex.Message);
         }
     }
@@ -54,7 +54,8 @@ public class Controller : ControllerBase
             List<BaseEvent> evts = _business.GetEventsForAccount(account);
             return Ok(evts);
 
-        } catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
@@ -69,7 +70,8 @@ public class Controller : ControllerBase
             Account accountState = _business.GetAccountStateByDate(account, date);
             return Ok(accountState);
 
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
@@ -84,7 +86,23 @@ public class Controller : ControllerBase
             _business.PublishEvent(amount, account, transactionType);
             return Ok("Transação registrada com sucesso.");
         }
-        catch (Exception ex) 
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("/RollbackEvent")]
+
+    public IActionResult RollbackEvent(BaseEvent evt)
+    {
+        try
+        {
+            _business.RollbackEvent(evt);
+            return Ok();
+        }
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
