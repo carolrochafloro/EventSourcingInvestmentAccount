@@ -81,7 +81,7 @@ public class Business : IBusiness
     {
         Account currentAccount = _data.GetAccount(account);
         Snapshot lastSnapshot = _data.GetSnapshot(date, account);
-        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
         List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSinceUntil(account, date, currentDate);
 
         currentAccount.Balance = CalculateBalance(eventsSinceLastSnapshot, lastSnapshot.Balance);

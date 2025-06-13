@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi;
 
 [ApiController]
+[Route("api/[controller]")]
 public class Controller : ControllerBase
 {
     private readonly IBusiness _business;
@@ -17,6 +18,7 @@ public class Controller : ControllerBase
     }
 
     [HttpPost]
+    [Route("/CreateAccount")]
     public IActionResult CreateAccount([FromQuery] string name)
     {
         try

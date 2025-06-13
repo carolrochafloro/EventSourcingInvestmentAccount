@@ -10,6 +10,6 @@ public class Account
     public required string AccountNumber { get; set; }
     public required string Name { get; set; }
     public decimal Balance { get; set; } = 0m;
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastUpdatedAt { get; set; }
 }

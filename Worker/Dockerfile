@@ -11,6 +11,8 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Worker/Worker.csproj", "Worker/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Infra.Queue/Infra.Queue.csproj", "Infra.Queue/"]
 RUN dotnet restore "./Worker/Worker.csproj"
 COPY . .
 WORKDIR "/src/Worker"

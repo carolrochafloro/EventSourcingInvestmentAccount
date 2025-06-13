@@ -17,7 +17,7 @@ public class EventSourcingDbContextFactory :  IDesignTimeDbContextFactory<EventS
             .AddJsonFile("appsettings.Development.json", optional: false)
             .Build();
 
-        var connectionString = configuration.GetConnectionString("Postgres");
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<EventSourcingDbContext>();
         optionsBuilder.UseNpgsql(connectionString);

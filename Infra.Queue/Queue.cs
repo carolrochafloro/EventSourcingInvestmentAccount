@@ -82,7 +82,7 @@ public class Queue : IQueue, IAsyncDisposable
         var json = JsonSerializer.Serialize(accountEvent);
         var body = Encoding.UTF8.GetBytes(json);
 
-        await _channel.BasicPublishAsync(exchange: string.Empty, routingKey: accountEvent.EventName, mandatory: false, body: body);
+        await _channel.BasicPublishAsync(exchange: string.Empty, routingKey: QueueName, mandatory: false, body: body);
     }
 
     public async ValueTask DisposeAsync()

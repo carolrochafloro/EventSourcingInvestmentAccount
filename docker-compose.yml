@@ -17,35 +17,52 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Web UI
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   api:
     build:
       context: .
       dockerfile: WebApi/Dockerfile
+    container_name: webapi
+    restart: always
     depends_on:
-      - postgres
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
     ports:
       - "8080:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=EventSourcingDb;Username=postgres;Password=postgres
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=EventSourcingDb;Username=postgres;Password=postgres
+      RabbitMQ__HostName: rabbitmq
 
   worker:
     build:
       context: .
       dockerfile: Worker/Dockerfile
+    container_name: worker
+    restart: always
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
     environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=EventSourcingDb;Username=postgres;Password=postgres
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=EventSourcingDb;Username=postgres;Password=postgres
+      RabbitMQ__HostName: rabbitmq
 
 volumes:
   pgdata:

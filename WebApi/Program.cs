@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IQueue>(provider =>
 {
-    var queue = Queue.CreateAsync("localhost").GetAwaiter().GetResult();
+    var queue = Queue.CreateAsync("rabbitmq").GetAwaiter().GetResult();
     return queue;
 });
 
@@ -20,7 +20,7 @@ builder.Services.AddScoped<IData, Data>();
 builder.Services.AddScoped<ICapitalContributionHandler, CapitalContributionHandler>();
 builder.Services.AddScoped<IWithdrawalHandler, WithdrawalHandler>();
 
-builder.Services.AddDbContext<EventSourcingDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
+builder.Services.AddDbContext<EventSourcingDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSwaggerGen();
 
@@ -33,5 +33,11 @@ if (app.Environment.IsDevelopment())
 }  
 app.UseHttpsRedirection();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<EventSourcingDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.Run();
