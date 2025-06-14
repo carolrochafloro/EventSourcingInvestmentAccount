@@ -13,5 +13,6 @@ public abstract record BaseEvent
     Decimal Amount
 )
 {
-public virtual string EventName => GetType().Name;
+    public virtual string EventName => GetType().Name;
+    public string? ReversedEvent { get; set; }
 }

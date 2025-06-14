@@ -65,7 +65,7 @@ public class Controller : ControllerBase
 
     [HttpGet]
     [Route("/GetStateByDate")]
-    public IActionResult GetStateByDate([FromQuery] DateOnly date, [FromQuery] string account)
+    public IActionResult GetStateByDate([FromQuery] DateTime date, [FromQuery] string account)
     {
         try
         {
@@ -97,11 +97,11 @@ public class Controller : ControllerBase
     [HttpPost]
     [Route("/RollbackEvent")]
 
-    public IActionResult RollbackEvent(BaseEvent evt)
+    public IActionResult RollbackEvent(Guid id)
     {
         try
         {
-            _business.RollbackEvent(evt);
+            _business.RollbackEvent(id);
             return Ok();
         }
         catch (Exception ex)

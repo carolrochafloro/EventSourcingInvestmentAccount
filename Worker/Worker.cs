@@ -10,14 +10,16 @@ public class Worker : BackgroundService
     private readonly IBusiness _business;
     private readonly ICapitalContributionHandler _capitalContributionHandler;
     private readonly IWithdrawalHandler _withdrawalHandler;
+    private readonly IData _data;
 
-    public Worker(ILogger<Worker> logger, IQueue queue, IBusiness business, ICapitalContributionHandler capitalContributionHandler, IWithdrawalHandler withdrawalHandler)
+    public Worker(ILogger<Worker> logger, IQueue queue, IBusiness business, ICapitalContributionHandler capitalContributionHandler, IWithdrawalHandler withdrawalHandler, IData data)
     {
         _logger = logger;
         _queue = queue;
         _business = business;
         _capitalContributionHandler = capitalContributionHandler;
         _withdrawalHandler = withdrawalHandler;
+        _data = data;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,7 +44,7 @@ public class Worker : BackgroundService
 
                     case ReversalEvent reversal:
                         _logger.LogInformation("Reversão recebida para o evento: {OriginalEventId}", reversal.OriginalEventId);
-                        _business.RollbackEvent(reversal);
+                        _data.SaveEvent(reversal);
                         break;
 
                     default:

@@ -55,6 +55,7 @@ public class Queue : IQueue, IAsyncDisposable
                 {
                     nameof(CapitalContribution) => JsonSerializer.Deserialize<CapitalContribution>(json),
                     nameof(Withdrawal) => JsonSerializer.Deserialize<Withdrawal>(json),
+                    nameof(ReversalEvent) => JsonSerializer.Deserialize<ReversalEvent>(json),
                     _ => throw new InvalidOperationException("Evento desconhecido")
                 };
 

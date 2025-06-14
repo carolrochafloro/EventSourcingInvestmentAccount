@@ -38,9 +38,9 @@ public class Data : IData
         return _context.Events.FirstOrDefault(e => e.Id == id);
     }
 
-    public List<BaseEvent> GetEventsSince(string account, DateOnly date)
+    public List<BaseEvent> GetEventsSince(string account, DateTime date)
     {
-        var since = date.ToDateTime(TimeOnly.MinValue);
+        var since = DateTime.UtcNow;
 
         return _context.Events
             .Where(e => e.Account == account && e.Timestamp > since)
@@ -48,10 +48,10 @@ public class Data : IData
             .ToList();
     }
 
-    public List<BaseEvent> GetEventsSinceUntil(string account, DateOnly sinceDate, DateOnly untilDate)
+    public List<BaseEvent> GetEventsSinceUntil(string account, DateTime sinceDate, DateTime untilDate)
     {
-        var since = sinceDate.ToDateTime(TimeOnly.MinValue);
-        var until = untilDate.ToDateTime(TimeOnly.MaxValue);
+        var since = DateTime.UtcNow;
+        var until = DateTime.UtcNow;
 
         return _context.Events
             .Where(e => e.Account == account && e.Timestamp > since && e.Timestamp <= until)
@@ -59,7 +59,7 @@ public class Data : IData
             .ToList();
     }
 
-    public Snapshot GetSnapshot(DateOnly? date, string account)
+    public Snapshot GetSnapshot(DateTime? date, string account)
     {
         if (date == null)
         {
@@ -69,7 +69,7 @@ public class Data : IData
                 .FirstOrDefault();
         }
 
-        var until = date.Value.ToDateTime(TimeOnly.MaxValue);
+        var until = DateTime.UtcNow;
 
         return _context.Snapshots
             .Where(s => s.Account == account && s.Timestamp <= until)

@@ -20,7 +20,7 @@ public class Business : IBusiness
         return _data.GetAllEvents(account);
     }
 
-    public Snapshot GetSnapshotByDate(DateOnly date, string account) 
+    public Snapshot GetSnapshotByDate(DateTime date, string account)
     {
         return _data.GetSnapshot(date, account);
     }
@@ -33,8 +33,12 @@ public class Business : IBusiness
 
         if (lastSnapshot != null)
         {
-            DateOnly lastSnapshotDate = DateOnly.FromDateTime(lastSnapshot.Timestamp);
-            eventsToReplay = _data.GetEventsSince(account, lastSnapshotDate);
+            DateTime lastSnapshotDateTime = DateTime.SpecifyKind(
+                lastSnapshot.Timestamp.Date,
+                DateTimeKind.Utc
+            );
+
+            eventsToReplay = _data.GetEventsSince(account, lastSnapshotDateTime);
             startingBalance = lastSnapshot.Balance;
         }
         else
@@ -47,18 +51,18 @@ public class Business : IBusiness
         Snapshot snapshot = new Snapshot
         {
             Account = account,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = DateTime.UtcNow, // ✅ Timestamp seguro para PostgreSQL
             Balance = balance
         };
 
         _data.SaveSnapshot(snapshot);
     }
 
-    public Account GetCurrentState(string account) 
+    public Account GetCurrentState(string account)
     {
         List<BaseEvent> evts = _data.GetAllEvents(account);
         Account currentAccount = _data.GetAccount(account);
-        
+
         currentAccount.Balance = CalculateBalance(evts, currentAccount.Balance);
 
         return currentAccount;
@@ -77,12 +81,15 @@ public class Business : IBusiness
         return newAccount;
     }
 
-    public Account GetAccountStateByDate(string account, DateOnly date)
+    public Account GetAccountStateByDate(string account, DateTime date)
     {
         Account currentAccount = _data.GetAccount(account);
         Snapshot lastSnapshot = _data.GetSnapshot(date, account);
-        DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
-        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSinceUntil(account, date, currentDate);
+
+        var from = DateTime.UtcNow;
+        var to = DateTime.UtcNow;
+
+        List<BaseEvent> eventsSinceLastSnapshot = _data.GetEventsSinceUntil(account, from, to);
 
         currentAccount.Balance = CalculateBalance(eventsSinceLastSnapshot, lastSnapshot.Balance);
 
@@ -100,25 +107,26 @@ public class Business : IBusiness
 
         _queue.Produce(evt);
     }
-
-    public void RollbackEvent(BaseEvent originalEvent)
+    public void RollbackEvent(Guid id)
     {
+        var originalEvent = _data.GetEventById(id);
+
         var reversal = new ReversalEvent(
-        Guid.NewGuid(),
-        DateTime.UtcNow,
-        originalEvent.Account,
-        originalEvent.Amount,
-        originalEvent.Id,
-        originalEvent.EventName
-    );
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            originalEvent.Account,
+            originalEvent.Amount,
+            originalEvent.Id
+        );
+
+        reversal.ReversedEvent = originalEvent.GetType().Name;
 
         _queue.Produce(reversal);
     }
 
     public BaseEvent GetEventById(Guid id)
     {
-        var evt = _data.GetEventById(id);
-        return evt;
+        return _data.GetEventById(id);
     }
 
     private decimal CalculateBalance(IEnumerable<BaseEvent> events, decimal startingBalance)
@@ -136,11 +144,11 @@ public class Business : IBusiness
                     break;
 
                 case ReversalEvent reversal:
-                    startingBalance += reversal.OriginalEventName switch
+                    startingBalance += reversal.ReversedEvent switch
                     {
                         nameof(CapitalContribution) => -reversal.Amount,
                         nameof(Withdrawal) => reversal.Amount,
-                        _ => throw new InvalidOperationException($"Tipo de evento reversível desconhecido: {reversal.OriginalEventName}")
+                        _ => throw new InvalidOperationException($"Tipo de evento reversível desconhecido: {reversal.ReversedEvent}")
                     };
                     break;
 

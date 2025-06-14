@@ -11,12 +11,12 @@ namespace Domain.Interfaces;
 public interface IBusiness
 {
     List<BaseEvent> GetEventsForAccount(string account);
-    Snapshot GetSnapshotByDate(DateOnly date, string account);
+    Snapshot GetSnapshotByDate(DateTime date, string account);
     void CreateSnapshot(string account);
     Account GetCurrentState(string account);
     Account CreateAccount(string name);
-    Account GetAccountStateByDate(string account, DateOnly date);
+    Account GetAccountStateByDate(string account, DateTime date);
     void PublishEvent(decimal amount, string account, TransactionTypes transactionType);
-    void RollbackEvent(BaseEvent originalEvent);
+    void RollbackEvent(Guid id);
     BaseEvent GetEventById(Guid id);
 }

@@ -10,9 +10,8 @@ public record ReversalEvent(
     DateTime Timestamp,
     string Account,
     decimal Amount,
-    Guid OriginalEventId,
-    string OriginalEventName
+    Guid OriginalEventId
 ) : BaseEvent(Id, Timestamp, Account, Amount)
 {
-    public override string EventName => $"{OriginalEventName}Reversed";
+    public override string EventName => nameof(ReversalEvent);
 }
