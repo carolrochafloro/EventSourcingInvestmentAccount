@@ -4,12 +4,12 @@ using Domain.Events;
 using Domain.Interfaces;
 
 namespace Domain.Business;
-public class Business : IBusiness
+public class Handler : IHandler
 {
     private readonly IData _data;
     private readonly IQueue _queue;
 
-    public Business(IData data, IQueue queue)
+    public Handler(IData data, IQueue queue)
     {
         _data = data;
         _queue = queue;
@@ -131,7 +131,9 @@ public class Business : IBusiness
 
     private decimal CalculateBalance(IEnumerable<BaseEvent> events, decimal startingBalance)
     {
-        foreach (BaseEvent ev in events)
+        var orderedEvents = events.OrderBy(e => e.Timestamp);
+
+        foreach (BaseEvent ev in orderedEvents)
         {
             switch (ev)
             {

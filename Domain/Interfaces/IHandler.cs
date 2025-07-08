@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Interfaces;
-public interface IBusiness
+public interface IHandler
 {
     List<BaseEvent> GetEventsForAccount(string account);
     Snapshot GetSnapshotByDate(DateTime date, string account);

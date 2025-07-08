@@ -10,9 +10,9 @@ namespace WebApi;
 [Route("api/[controller]")]
 public class Controller : ControllerBase
 {
-    private readonly IBusiness _business;
+    private readonly IHandler _business;
 
-    public Controller(IBusiness business)
+    public Controller(IHandler business)
     {
         _business = business;
     }

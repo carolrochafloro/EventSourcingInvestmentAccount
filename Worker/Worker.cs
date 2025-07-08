@@ -7,12 +7,12 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IQueue _queue;
-    private readonly IBusiness _business;
+    private readonly IHandler _business;
     private readonly ICapitalContributionHandler _capitalContributionHandler;
     private readonly IWithdrawalHandler _withdrawalHandler;
     private readonly IData _data;
 
-    public Worker(ILogger<Worker> logger, IQueue queue, IBusiness business, ICapitalContributionHandler capitalContributionHandler, IWithdrawalHandler withdrawalHandler, IData data)
+    public Worker(ILogger<Worker> logger, IQueue queue, IHandler business, ICapitalContributionHandler capitalContributionHandler, IWithdrawalHandler withdrawalHandler, IData data)
     {
         _logger = logger;
         _queue = queue;

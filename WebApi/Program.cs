@@ -15,7 +15,7 @@ builder.Services.AddSingleton<IQueue>(provider =>
     return queue;
 });
 
-builder.Services.AddScoped<IBusiness, Business>();
+builder.Services.AddScoped<IHandler, Handler>();
 builder.Services.AddScoped<IData, Data>();
 builder.Services.AddScoped<ICapitalContributionHandler, CapitalContributionHandler>();
 builder.Services.AddScoped<IWithdrawalHandler, WithdrawalHandler>();
